@@ -2,7 +2,6 @@ import { Persistence } from '../persistence/persistence';
 import { Request, Response } from 'express';
 import dotenv from 'dotenv';
 import { WatchList, WATCH_LIST_TABLE, WatchListQueries } from '../entity/watch-list';
-import { watch } from 'fs';
 
 dotenv.config();
 
@@ -20,4 +19,15 @@ const addWatchList = async (req: Request, res: Response) => {
         .catch(() => res.status(500).json({message: 'Error saving watch list'}));
 }
 
-export default {addWatchList};
+const getWatchLists = async (req: Request, res: Response) => {
+    const {userId} = req.params;
+    if (!userId) {
+        res.status(400).json({message: 'No user id provided'});
+        return;
+    }
+
+    const watchLists = await Persistence.selectEntitiesByNamedQuery<WatchList>(WatchListQueries.GET_WATCH_LISTS_BY_USER_ID, [userId]);
+    res.status(200).json(watchLists);
+}
+
+export default {addWatchList, getWatchLists};

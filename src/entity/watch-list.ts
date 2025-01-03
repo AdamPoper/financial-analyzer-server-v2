@@ -8,13 +8,8 @@ export interface WatchList extends RowDataPacket {
     name: string
 }
 
-export interface WatchListModel {
-    id: number;
-    userId: number;
-    name: string;
-}
-
 export const WatchListQueries = {
     GET_WATCH_LIST_BY_ID: "SELECT * from watch_list WHERE id = ?",
     GET_WATCH_LIST_BY_NAME_AND_USER_ID: "SELECT * from watch_list WHERE name = ? AND user_id = ?",
+    GET_WATCH_LISTS_BY_USER_ID: "SELECT * from watch_list WHERE user_id = ?",
 }
