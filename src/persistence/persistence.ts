@@ -3,10 +3,6 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-interface GenericEntity {
-    id: number;
-}
-
 export const pool = mysql2.createPool({
     host: 'localhost',
     user: process.env.DB_USERNAME,
