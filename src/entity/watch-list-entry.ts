@@ -16,5 +16,6 @@ export interface WatchListEntryModel {
 }
 
 export const WatchListEntryQueries = {
-    GET_WATCH_LIST_ENTRY_BY_WATCH_LIST_ID: 'SELECT * FROM watch_list_entry WHERE watch_list_id = ?',
+    GET_WATCH_LIST_ENTRIES_BY_WATCH_LIST_ID: 'SELECT * FROM watch_list_entry WHERE watch_list_id = ?',
+    GET_WATCH_LIST_ENTRY_BY_WATCH_LIST_ID_AND_SYMBOL: 'SELECT * FROM watch_list_entry WHERE watch_list_id = ? AND symbol = ?',
 }
