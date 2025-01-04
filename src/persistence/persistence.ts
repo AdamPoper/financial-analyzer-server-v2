@@ -1,5 +1,6 @@
 import mysql2 from 'mysql2/promise';
 import dotenv from 'dotenv';
+import GenericEntity from '../entity/generic-entity';
 
 dotenv.config();
 
