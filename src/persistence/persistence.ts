@@ -89,7 +89,6 @@ export class Persistence {
 
     static async deleteEntity<T extends GenericEntity>(className: string, id: number): Promise<T | null> {
         const row = await this.selectEntityById<T>(className, id);
-        console.log('Found row: ', row);
         if (!row) {
             return null;
         }
