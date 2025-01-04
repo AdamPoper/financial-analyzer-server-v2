@@ -2,6 +2,7 @@ import { Persistence } from '../persistence/persistence';
 import { Request, Response } from 'express';
 import dotenv from 'dotenv';
 import { WatchList, WATCH_LIST_TABLE, WatchListQueries } from '../entity/watch-list';
+import { WATCH_LIST_ENTRY_TABLE, WatchListEntryQueries } from '../entity/watch-list-entry';
 
 dotenv.config();
 
@@ -30,4 +31,25 @@ const getWatchLists = async (req: Request, res: Response) => {
     res.status(200).json(watchLists);
 }
 
-export default {addWatchList, getWatchLists};
+const deleteWatchList = async (req: Request, res: Response) => {
+    const {watchListId} = req.params;
+    if (!watchListId) {
+        res.status(400).json({message: 'No watch list id provided'});
+        return;
+    }
+
+    const watchList = await Persistence.selectEntityById<WatchList>(WATCH_LIST_TABLE, parseInt(watchListId));
+    if (!watchList) {
+        res.status(404).json({message: 'Watch list not found'});
+        return;
+    }
+
+    const entries = await Persistence.selectEntitiesByNamedQuery(WatchListEntryQueries.GET_WATCH_LIST_ENTRY_BY_WATCH_LIST_ID, [watchListId]);
+    entries.forEach(async entry => await Persistence.deleteEntity(WATCH_LIST_ENTRY_TABLE, entry.id));
+
+    Persistence.deleteEntity(WATCH_LIST_TABLE, watchListId)
+        .then(() => res.status(200).json({message: `Watch list ${watchList.name} deleted`}))
+        .catch(() => res.status(500).json({message: 'Error deleting watch list'}));
+}
+
+export default {addWatchList, getWatchLists, deleteWatchList};

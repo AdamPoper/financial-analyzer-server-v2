@@ -1,8 +1,9 @@
 import { RowDataPacket } from "mysql2";
+import GenericEntity from "./generic-entity";
 
 export const USER_TABLE = 'user';
 
-export interface User extends RowDataPacket {
+export interface User extends RowDataPacket, GenericEntity {
     id: number;
     username: string;
     password: string;
