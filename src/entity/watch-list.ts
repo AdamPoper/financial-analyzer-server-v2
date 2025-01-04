@@ -1,8 +1,9 @@
 import { RowDataPacket } from "mysql2";
+import GenericEntity from "./generic-entity";
 
-export const WATCH_LIST_TABLE = 'WatchList';
+export const WATCH_LIST_TABLE = 'watch_list';
 
-export interface WatchList extends RowDataPacket {
+export interface WatchList extends RowDataPacket, GenericEntity {
     id: number;
     user_id: number;
     name: string

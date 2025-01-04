@@ -16,24 +16,30 @@ export const pool = mysql2.createPool({
 
 export class Persistence {
 
-    static async selectEntitiesByNamedQuery<T>(query: string, args?: Array<any>): Promise<Array<T>> {
+    static async selectEntitiesByNamedQuery<T extends GenericEntity>(query: string, args?: Array<any>): Promise<Array<T>> {
         const [results] = await pool.execute(query, args);
         return results as T[];
     }
 
-    static async selectEntityByNamedQuery<T>(query: string, args?: Array<any>): Promise<T> {
+    static async selectEntityByNamedQuery<T extends GenericEntity>(query: string, args?: Array<any>): Promise<T> {
         const [results] = await pool.execute(query, args);
         return (results as T[])[0] as T;
     }
 
-    static async selectEntitiesByNamedQueryPaged<T>(query: string, pageSize: number, pageNumber: number, args?: Array<any>): Promise<Array<T>> {
+    static async selectEntitiesByNamedQueryPaged<T extends GenericEntity>(query: string, pageSize: number, pageNumber: number, args?: Array<any>): Promise<Array<T>> {
         const [results] = await pool.execute(query, args);
         const start = pageSize * pageNumber;
         const end = start + pageSize;
         return (results as T[]).slice(start, end);
     }
 
-    static async persistEntity<T>(className: string, entity: Partial<T>): Promise<any> {
+    static async selectEntityById<T extends GenericEntity>(className: string, id: number): Promise<T | null> {
+        const query = `SELECT * FROM ${className} WHERE id = ?;`;
+        const [results] = await pool.execute(query, [id]);
+        return (results as T[])[0] as T;
+    }
+
+    static async persistEntity<T extends GenericEntity>(className: string, entity: Partial<T>): Promise<any> {
         const columns = Object.keys(entity);
         const values = Object.values(entity);
 
@@ -44,7 +50,7 @@ export class Persistence {
         return await pool.execute(query, values);
     }
 
-    static async persistEntities<T>(className: string, entities: Array<Partial<T>>): Promise<any> {
+    static async persistEntities<T extends GenericEntity>(className: string, entities: Array<Partial<T>>): Promise<any> {
         if (entities.length === 0) {
             return new Promise((resolve, reject) => {
                 resolve('No entities to persist');
@@ -79,5 +85,17 @@ export class Persistence {
         query += setClauses.join(', ');
         query += ` WHERE id = ?;`;
         return await pool.execute(query, params);
+    }
+
+    static async deleteEntity<T extends GenericEntity>(className: string, id: number): Promise<T | null> {
+        const row = await this.selectEntityById<T>(className, id);
+        console.log('Found row: ', row);
+        if (!row) {
+            return null;
+        }
+
+        const query: string = `DELETE FROM ${className} WHERE id = ?;`;
+        await pool.execute(query, [id]);
+        return row;
     }
 }
