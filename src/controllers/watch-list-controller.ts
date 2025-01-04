@@ -69,7 +69,6 @@ const addWatchListEntry = async (req: Request, res: Response) => {
         watch_list_id: model.watchListId,
         symbol: model.symbol
     } as WatchListEntry;
-    console.log(entry);
 
     Persistence.persistEntity(WATCH_LIST_ENTRY_TABLE, entry)
         .then(() => res.status(200).json({message: 'Watch list entry added'}))
@@ -78,7 +77,6 @@ const addWatchListEntry = async (req: Request, res: Response) => {
 
 const removeWatchListEntry = async (req: Request, res: Response) => {
     const {watchListEntryId} = req.params;
-    console.log(watchListEntryId);
 
     if (!watchListEntryId) {
         res.status(400).json({message: 'No watch list entry id provided'});
