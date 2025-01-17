@@ -1,27 +1,29 @@
-import { User, UserQueries, UserRequestBody, USER_TABLE } from "../entity/user";
+import { User, UserQueries, UserRequest, USER_TABLE } from "../entity/user";
 import {Request, Response} from 'express';
 import bcrypt from 'bcrypt';
 import { Persistence } from "../persistence/persistence";
 
 const getUser = async (req: Request, res: Response) => {
     const loginFailMessage = 'Invalid user name or password';
-    const userRequest = req.body as UserRequestBody;
-    const user: User = await Persistence.selectEntityByNamedQuery(UserQueries.GET_USER_BY_USERNAME, [userRequest.username]);
+    const {username, password} = req.query;
+    const user: User = await Persistence.selectEntityByNamedQuery(UserQueries.GET_USER_BY_USERNAME, [username]);
     if (!user) {
         res.status(404).json({message: loginFailMessage});
         return;
     }
 
-    const match = await bcrypt.compare(userRequest.password, user.password);
+    const match = await bcrypt.compare(password, user.password);
     if (match) {
-        res.status(200).json(user);
+        const responseBody = {...user};
+        delete responseBody.password;
+        res.status(200).json(responseBody);
     } else {
         res.status(404).json({message: loginFailMessage});
     }
 }
 
 const addNewUser = async (req: Request, res: Response) => {
-    const userRequest = req.body as UserRequestBody;
+    const userRequest = req.body as UserRequest;
     const existingUser = await Persistence.selectEntityByNamedQuery<User>(UserQueries.GET_USER_BY_USERNAME, [userRequest.username]);
     if (existingUser) {
         res.status(400).json({message: 'User with name ' + userRequest.username + ' already exists'});
