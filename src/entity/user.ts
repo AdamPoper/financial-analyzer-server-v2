@@ -9,7 +9,7 @@ export interface User extends RowDataPacket, GenericEntity {
     password: string;
 }
 
-export interface UserRequestBody {
+export interface UserRequest {
     username: string;
     password: string;
 }
