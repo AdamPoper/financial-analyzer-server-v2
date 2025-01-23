@@ -21,7 +21,7 @@ const addWatchList = async (req: Request, res: Response) => {
 }
 
 const getWatchLists = async (req: Request, res: Response) => {
-    const {userId} = req.params;
+    const userId = req.query.userId;
     if (!userId) {
         res.status(400).json({message: 'No user id provided'});
         return;
