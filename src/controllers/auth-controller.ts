@@ -24,6 +24,11 @@ const getUser = async (req: Request, res: Response) => {
 
 const addNewUser = async (req: Request, res: Response) => {
     const userRequest = req.body as UserRequest;
+    if (!userRequest.username || !userRequest.password) {
+        res.status(400).json({message: 'Username and password are required'});
+        return;
+    }
+    
     const existingUser = await Persistence.selectEntityByNamedQuery<User>(UserQueries.GET_USER_BY_USERNAME, [userRequest.username]);
     if (existingUser) {
         res.status(400).json({message: 'User with name ' + userRequest.username + ' already exists'});
